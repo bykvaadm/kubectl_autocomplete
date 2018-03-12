@@ -1,0 +1,31 @@
+_kubectl()
+{
+    local cur prev opts base
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    args="deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe$
+    opts="--help --namespace --all-namespaces -n -o"
+    output="wide yaml"
+
+    case "${prev}" in
+        -n)
+            local namespaces=$(kubectl get ns | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${namespaces}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+
+    if [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    else
+        COMPREPLY=( $(compgen -W "${args}" -- ${cur}) )
+        return 0
+    fi
+
+}
+complete -F _kubectl kubectl
