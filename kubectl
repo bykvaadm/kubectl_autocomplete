@@ -1,18 +1,54 @@
-_kubectl()
+__get_namespace() {
+    local i c=1 namespace
+
+    for (( c=1; c <= ${#COMP_WORDS[@]}; c++ )); do
+        i="${COMP_WORDS[c]}"
+        case "$i" in
+            --namespace)
+                c=$((++c))
+                i="${COMP_WORDS[c]}"
+                namespace="${i##*=}";
+                break
+                ;;
+            -n)
+                c=$((++c))
+                i="${COMP_WORDS[c]}"
+                namespace="${i##*=}";
+                break
+                ;;
+        esac
+    done
+    #boot_dir=${boot_dir-/boot}
+    #echo "${boot_dir%/}/grub"
+    echo $namespace
+}
+
+_kubectl() 
 {
     local cur prev opts base
     COMPREPLY=()
+
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    args="deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe$
+    args="deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe logs attach exec port-forward proxy cp auth apply patch replace convert label annotate completion api-versions config help plugin version"
     opts="--help --namespace --all-namespaces -n -o"
     output="wide yaml"
 
     case "${prev}" in
+        po)
+            local namespace=$(__get_namespace)
+            local pods=$(kubectl get po -n $namespace | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${pods}" -- ${cur}) )
+            return 0
+            ;;
         -n)
             local namespaces=$(kubectl get ns | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${namespaces}" -- ${cur}) )
+            return 0
+            ;;
+	-o)
+	    COMPREPLY=( $(compgen -W "${output}" -- ${cur}) )
             return 0
             ;;
         *)
