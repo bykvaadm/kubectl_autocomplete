@@ -38,13 +38,19 @@ _kubectl()
 	#    complete -d kubectl
         #    return 0
         #    ;;
+        deployment|deploy)
+            local namespace=$(__get_namespace)
+            local deployments=$(kubectl get deployments -n $namespace | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${deployments}" -- ${cur}) )
+            return 0
+            ;;
         job|jobs)
             local namespace=$(__get_namespace)
             local jobs=$(kubectl get jobs -n $namespace | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${jobs}" -- ${cur}) )
             return 0
             ;;
-        po|-ti)
+        po|-ti|logs|log)
             local namespace=$(__get_namespace)
             local pods=$(kubectl get po -n $namespace | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${pods}" -- ${cur}) )
