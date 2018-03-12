@@ -29,7 +29,7 @@ _kubectl()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    args="deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe logs attach exec port-forward proxy cp auth apply patch replace convert label annotate completion api-versions config help plugin version"
+    args="job deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe logs attach exec port-forward proxy cp auth apply patch replace convert label annotate completion api-versions config help plugin version"
     opts="--help --namespace --all-namespaces -n -o"
     output="wide yaml"
 
@@ -38,6 +38,12 @@ _kubectl()
 	#    complete -d kubectl
         #    return 0
         #    ;;
+        job|jobs)
+            local namespace=$(__get_namespace)
+            local jobs=$(kubectl get jobs -n $namespace | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${jobs}" -- ${cur}) )
+            return 0
+            ;;
         po|-ti)
             local namespace=$(__get_namespace)
             local pods=$(kubectl get po -n $namespace | awk '{print $1}' | grep -v "NAME")
