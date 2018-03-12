@@ -9,3 +9,4 @@ you should be able to use autocompletion for kubectl
 autocomplete features:
 - namespaces
 - all default arguments
+- pods autocomplete (after word "po" if -n xxx or --namespace xxx is used)
