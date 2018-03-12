@@ -18,8 +18,6 @@ __get_namespace() {
                 ;;
         esac
     done
-    #boot_dir=${boot_dir-/boot}
-    #echo "${boot_dir%/}/grub"
     echo $namespace
 }
 
