@@ -34,13 +34,17 @@ _kubectl()
     output="wide yaml"
 
     case "${prev}" in
-        po)
+        #-f)
+	#    complete -d kubectl
+        #    return 0
+        #    ;;
+        po|-ti)
             local namespace=$(__get_namespace)
             local pods=$(kubectl get po -n $namespace | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${pods}" -- ${cur}) )
             return 0
             ;;
-        -n)
+        -n|--namespace)
             local namespaces=$(kubectl get ns | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${namespaces}" -- ${cur}) )
             return 0
