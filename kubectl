@@ -72,7 +72,7 @@ _kubectl()
             COMPREPLY=( $(compgen -W "${jobs}" -- ${cur}) )
             return 0
             ;;
-        po|-ti|logs|log)
+        po|-ti|logs|log|attach)
             local namespace=$(__get_namespace)
             local pods=$(kubectl get po -n $namespace | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${pods}" -- ${cur}) )
