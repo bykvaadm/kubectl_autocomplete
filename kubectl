@@ -29,7 +29,7 @@ _kubectl()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    args="job deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe logs attach exec port-forward proxy cp auth apply patch replace convert label annotate completion api-versions config help plugin version"
+    args="storageclass job deployment po svc pv pvc configmaps create expose run set run-container get explain edit delete rollout rolling-update scale autoscale certificate cluster-info top cordon uncordon drain taint describe logs attach exec port-forward proxy cp auth apply patch replace convert label annotate completion api-versions config help plugin version"
     opts="--help --namespace --all-namespaces -n -o"
     output="wide yaml"
 
@@ -38,6 +38,28 @@ _kubectl()
 	#    complete -d kubectl
         #    return 0
         #    ;;
+        configmaps)
+            local namespace=$(__get_namespace)
+            local configmaps=$(kubectl get configmaps -n $namespace | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${configmaps}" -- ${cur}) )
+            return 0
+            ;;
+        pv)
+            local pv=$(kubectl get pv | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${pv}" -- ${cur}) )
+            return 0
+            ;;
+        pvc)
+            local namespace=$(__get_namespace)
+            local pvc=$(kubectl get pvc -n $namespace | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${pvc}" -- ${cur}) )
+            return 0
+            ;;
+        storageclass)
+            local storageclass=$(kubectl get storageclass | awk '{print $1}' | grep -v "NAME")
+            COMPREPLY=( $(compgen -W "${storageclass}" -- ${cur}) )
+            return 0
+            ;;
         deployment|deploy)
             local namespace=$(__get_namespace)
             local deployments=$(kubectl get deployments -n $namespace | awk '{print $1}' | grep -v "NAME")
@@ -57,7 +79,7 @@ _kubectl()
             return 0
             ;;
         -n|--namespace)
-            local namespaces=$(kubectl get ns | awk '{print $1}' | grep -v "NAME")
+            local namespaces=$(kubectl get namespaces | awk '{print $1}' | grep -v "NAME")
             COMPREPLY=( $(compgen -W "${namespaces}" -- ${cur}) )
             return 0
             ;;
