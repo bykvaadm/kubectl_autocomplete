@@ -34,10 +34,11 @@ _kubectl()
     output="wide yaml"
 
     case "${prev}" in
-        #-f)
-	#    complete -d kubectl
-        #    return 0
-        #    ;;
+        -f)
+	    local files=$(ls)
+            COMPREPLY=( $(compgen -W "${files}" -- ${cur}) )
+            return 0
+            ;;
         configmaps)
             local namespace=$(__get_namespace)
             local configmaps=$(kubectl get configmaps -n $namespace | awk '{print $1}' | grep -v "NAME")
